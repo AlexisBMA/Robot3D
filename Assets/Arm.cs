@@ -13,6 +13,7 @@ public class Arm : MonoBehaviour
 	List<Vector3[]> originals;
 	List<Vector3> sizes;
 	List<Vector3> places;
+    float x, x2;
 
     Vector3[] ApplyTransform(Vector3[] verts, Matrix4x4 m)
     {
@@ -33,39 +34,53 @@ public class Arm : MonoBehaviour
         parts = new List<GameObject>();
         originals = new List<Vector3[]>();
         sizes = new List<Vector3>();
-        places = new List<Vector3>();
 
         // shoulder
         parts.Add(GameObject.CreatePrimitive(PrimitiveType.Cube));
         originals.Add(parts[(int)PARTS.SHOULDER].GetComponent<MeshFilter>().mesh.vertices);
         sizes.Add(new Vector3(0.1f, .3f, 0.2f));
-        places.Add(new Vector3(0, 0, 0));
 
         // arm
         parts.Add(GameObject.CreatePrimitive(PrimitiveType.Cube));
         originals.Add(parts[(int)PARTS.ARM].GetComponent<MeshFilter>().mesh.vertices);
         sizes.Add(new Vector3(0.3f, 1f, 0.2f));
-        places.Add(new Vector3(.2f, -.35f, 0));
 
         // elbow
         parts.Add(GameObject.CreatePrimitive(PrimitiveType.Cube));
         originals.Add(parts[(int)PARTS.ELBOW].GetComponent<MeshFilter>().mesh.vertices);
         sizes.Add(new Vector3(0.4f, .2f, 0.2f));
-        places.Add(new Vector3(0, -.6f, 0));
+        
 
         // forearm
         parts.Add(GameObject.CreatePrimitive(PrimitiveType.Cube));
         originals.Add(parts[(int)PARTS.FOREARM].GetComponent<MeshFilter>().mesh.vertices);
         sizes.Add(new Vector3(0.3f, 1f, 0.2f));
-        places.Add(new Vector3(0, -.6f, 0));
+        
 
         // hand
         parts.Add(GameObject.CreatePrimitive(PrimitiveType.Cube));
         originals.Add(parts[(int)PARTS.HAND].GetComponent<MeshFilter>().mesh.vertices);
         sizes.Add(new Vector3(0.4f, .3f, 0.2f));
+        
+    }
+    public void Init(bool isRight)
+    {
+
+        places = new List<Vector3>();
+        if(isRight){
+            x = 0.55f;
+            x2 = .2f;
+        }else{
+            x = -0.55f;
+            x2 = -.2f;
+        }
+        
+        places.Add(new Vector3(x, .95f, 0));
+        places.Add(new Vector3(x2, -.35f, 0));
+        places.Add(new Vector3(0, -.6f, 0));
+        places.Add(new Vector3(0, -.6f, 0));
         places.Add(new Vector3(0, -.65f, 0));
     }
-
     // Update is called once per frame
     void Update()
     {
