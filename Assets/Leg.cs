@@ -13,7 +13,7 @@ public class Leg : MonoBehaviour
 	List<Vector3[]> originals;
 	List<Vector3> sizes;
 	List<Vector3> places;
-    float x, rotL1, dir, delta;
+    float x, rotL1, dir, delta, rotL2, delta2;
 
     Vector3[] ApplyTransform(Vector3[] verts, Matrix4x4 m)
     {
@@ -32,7 +32,9 @@ public class Leg : MonoBehaviour
     void Start()
     {
         rotL1 = 0;
+        rotL2 = 0;
         delta = 2;
+        delta2 = 3;
         parts = new List<GameObject>();
         originals = new List<Vector3[]>();
         sizes = new List<Vector3>();
@@ -40,7 +42,7 @@ public class Leg : MonoBehaviour
         // thigh
         parts.Add(GameObject.CreatePrimitive(PrimitiveType.Cube));
         originals.Add(parts[(int)PARTS.THIGH].GetComponent<MeshFilter>().mesh.vertices);
-        sizes.Add(new Vector3(.4f, 1, 0.2f));
+        sizes.Add(new Vector3(.4f, 1, 0.4f));
 
         // calf
         parts.Add(GameObject.CreatePrimitive(PrimitiveType.Cube));
@@ -62,15 +64,18 @@ public class Leg : MonoBehaviour
             x = -0.3f;
             dir = -1;
         }
-        places.Add(new Vector3(x, -.6f, 0));
-        places.Add(new Vector3(0, -.9f, 0));
+        places.Add(new Vector3(x, -.5f, 0));
+        places.Add(new Vector3(0, -.8f, 0));
         places.Add(new Vector3(0, -.45f, .15f));
     }
     // Update is called once per frame
     void Update()
     {
         rotL1 += dir * delta;
+        rotL2 += dir * delta2;
         if(rotL1 > 30 || rotL1 < -30) dir = -dir;
+
+        //if(rotL2 > 5 || rotL2 < -30) dir = -dir;
         // thigh
         List<Matrix4x4> matrices = new List<Matrix4x4>();
         Matrix4x4 zThigh = Transformations.RotateM(rotL1, Transformations.AXIS.AX_X);
@@ -80,15 +85,15 @@ public class Leg : MonoBehaviour
 
         // calf
         
-        Matrix4x4 zCalf = Transformations.RotateM(rotL1 * 1.3f, Transformations.AXIS.AX_X);
+        Matrix4x4 zCalf = Transformations.RotateM(rotL1/2, Transformations.AXIS.AX_X);
 		Matrix4x4 tCalf = Transformations.TranslateM(places[(int)PARTS.CALF].x, places[(int)PARTS.CALF].y, places[(int)PARTS.CALF].z);
 		Matrix4x4 sCalf = Transformations.ScaleM(sizes[(int)PARTS.CALF].x, sizes[(int)PARTS.CALF].y, sizes[(int)PARTS.CALF].z);
-		matrices.Add(zCalf * tThigh * tCalf * zThigh * sCalf);
+		matrices.Add(zThigh * tThigh * zCalf * tCalf *  sCalf);
 
         // FOOT
 		Matrix4x4 tFoot = Transformations.TranslateM(places[(int)PARTS.FOOT].x, places[(int)PARTS.FOOT].y, places[(int)PARTS.FOOT].z);
 		Matrix4x4 sFoot = Transformations.ScaleM(sizes[(int)PARTS.FOOT].x, sizes[(int)PARTS.FOOT].y, sizes[(int)PARTS.FOOT].z);
-		matrices.Add(zCalf * tThigh * tCalf * zThigh * tFoot  * sFoot);
+		matrices.Add( zThigh * tThigh * zCalf * tCalf  * tFoot  * sFoot);
 
         for(int i = 0; i < matrices.Count; i++)
 		{
