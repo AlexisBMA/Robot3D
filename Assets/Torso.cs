@@ -12,6 +12,7 @@ public enum PARTS
 	List<Vector3[]> originals;
 	List<Vector3> sizes;
 	List<Vector3> places;
+    float rotL1, dir, delta;
 	
 	Vector3[] ApplyTransform(Vector3[] verts, Matrix4x4 m)
     {
@@ -28,18 +29,22 @@ public enum PARTS
     // Start is called before the first frame update
     void Start()
     {
+        rotL1 = 0;
+        delta = .33f;
+        dir = 1;
+
         parts = new List<GameObject>();
         originals = new List<Vector3[]>();
         sizes = new List<Vector3>();
         places = new List<Vector3>();
         parts.Add(GameObject.CreatePrimitive(PrimitiveType.Cube));
         originals.Add(parts[(int)PARTS.HIPS].GetComponent<MeshFilter>().mesh.vertices);
-        sizes.Add(new Vector3(1, 0.2f, 1));
+        sizes.Add(new Vector3(1, 0.2f, 0.7f));
         places.Add(new Vector3(0, 0, 0));
 
         parts.Add(GameObject.CreatePrimitive(PrimitiveType.Cube));
         originals.Add(parts[(int)PARTS.TORSO].GetComponent<MeshFilter>().mesh.vertices);
-        sizes.Add(new Vector3(1, 1, 1));
+        sizes.Add(new Vector3(1, 1, 0.7f));
         places.Add(new Vector3(0, 0.6f, 0));
 
         parts.Add(GameObject.CreatePrimitive(PrimitiveType.Cube));
@@ -56,14 +61,19 @@ public enum PARTS
     // Update is called once per frame
     void Update()
     {
+
+        rotL1 += dir * delta;
+        if(rotL1 > 5 || rotL1 < -5) dir = -dir;
+
     	List<Matrix4x4> matrices = new List<Matrix4x4>();
+        Matrix4x4 zHips = Transformations.RotateM(rotL1, Transformations.AXIS.AX_Y);
 		Matrix4x4 tHips = Transformations.TranslateM(places[(int)PARTS.HIPS].x, places[(int)PARTS.HIPS].y, places[(int)PARTS.HIPS].z);
 		Matrix4x4 sHips = Transformations.ScaleM(sizes[(int)PARTS.HIPS].x, sizes[(int)PARTS.HIPS].y, sizes[(int)PARTS.HIPS].z);
-		matrices.Add(tHips * sHips);
+		matrices.Add(zHips * tHips * sHips);
 		
 		Matrix4x4 tTorso = Transformations.TranslateM(places[(int)PARTS.TORSO].x, places[(int)PARTS.TORSO].y, places[(int)PARTS.TORSO].z);
 		Matrix4x4 sTorso = Transformations.ScaleM(sizes[(int)PARTS.TORSO].x, sizes[(int)PARTS.TORSO].y, sizes[(int)PARTS.TORSO].z);
-		matrices.Add(tHips * tTorso * sTorso);
+		matrices.Add(zHips * tHips * tTorso * sTorso);
         
 		Matrix4x4 tNeck = Transformations.TranslateM(places[(int)PARTS.NECK].x, places[(int)PARTS.NECK].y, places[(int)PARTS.NECK].z);
 		Matrix4x4 sNeck = Transformations.ScaleM(sizes[(int)PARTS.NECK].x, sizes[(int)PARTS.NECK].y, sizes[(int)PARTS.NECK].z);

@@ -81,7 +81,7 @@ public class Arm : MonoBehaviour
         
         places.Add(new Vector3(x, .95f, 0));
         places.Add(new Vector3(x2, -.15f, 0));
-        places.Add(new Vector3(0, -.4f, 0));
+        places.Add(new Vector3(0, -.4f, -0.05f));
         places.Add(new Vector3(0, -.4f, 0));
         places.Add(new Vector3(0, -.45f, 0));
     }
@@ -98,26 +98,28 @@ public class Arm : MonoBehaviour
 		matrices.Add(zShoulder * tShoulder * sShoulder);
 
         // arm
-        
 		Matrix4x4 tArm = Transformations.TranslateM(places[(int)PARTS.ARM].x, places[(int)PARTS.ARM].y, places[(int)PARTS.ARM].z);
 		Matrix4x4 sArm = Transformations.ScaleM(sizes[(int)PARTS.ARM].x, sizes[(int)PARTS.ARM].y, sizes[(int)PARTS.ARM].z);
 		matrices.Add(zShoulder *  tShoulder * tArm * sArm);
 
         // elbow
+        Matrix4x4 zElbow = Transformations.RotateM(rotL1*2, Transformations.AXIS.AX_X);
+        Matrix4x4 iElbow = Transformations.RotateM(-10, Transformations.AXIS.AX_X);
 		Matrix4x4 tElbow = Transformations.TranslateM(places[(int)PARTS.ELBOW].x, places[(int)PARTS.ELBOW].y, places[(int)PARTS.ELBOW].z);
 		Matrix4x4 sElbow = Transformations.ScaleM(sizes[(int)PARTS.ELBOW].x, sizes[(int)PARTS.ELBOW].y, sizes[(int)PARTS.ELBOW].z);
-		matrices.Add(zShoulder *  tShoulder * tArm * tElbow * sElbow);
+		matrices.Add(zShoulder *  tShoulder * tArm * iElbow* tElbow * zElbow * sElbow);
 
         // FOREARM
-        Matrix4x4 zForearm = Transformations.RotateM(rotL1*2, Transformations.AXIS.AX_X);
+        Matrix4x4 zForearm= Transformations.RotateM(rotL1*2, Transformations.AXIS.AX_X);
 		Matrix4x4 tForearm = Transformations.TranslateM(places[(int)PARTS.FOREARM].x, places[(int)PARTS.FOREARM].y, places[(int)PARTS.FOREARM].z);
 		Matrix4x4 sForearm = Transformations.ScaleM(sizes[(int)PARTS.FOREARM].x, sizes[(int)PARTS.FOREARM].y, sizes[(int)PARTS.FOREARM].z);
-		matrices.Add(zShoulder *  tShoulder * tArm * tElbow *  tForearm * zForearm * sForearm);
-
+		matrices.Add(zShoulder *  tShoulder * tArm *iElbow * tElbow *  zElbow * zForearm* tForearm*sForearm);
+        //matrices.Add(zShoulder *  tShoulder * tArm * iElbow* tElbow *  tForearm  * sForearm);
         // HAND
 		Matrix4x4 tHand = Transformations.TranslateM(places[(int)PARTS.HAND].x, places[(int)PARTS.HAND].y, places[(int)PARTS.HAND].z);
 		Matrix4x4 sHand = Transformations.ScaleM(sizes[(int)PARTS.HAND].x, sizes[(int)PARTS.HAND].y, sizes[(int)PARTS.HAND].z);
-		matrices.Add(zShoulder * tShoulder * tArm * tElbow * tForearm * tHand * zForearm * sHand);
+		matrices.Add(zShoulder * tShoulder * tArm * iElbow *  tElbow *zElbow * zForearm * tForearm * tHand *  sHand);
+        //matrices.Add(zShoulder * tShoulder * tArm * iElbow* tElbow * tForearm * tHand  * sHand);
         
 
         for(int i = 0; i < matrices.Count; i++)
